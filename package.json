@@ -8,7 +8,8 @@
     "egg-mongoose": "^3.1.0",
     "egg-redis": "^2.0.0",
     "egg-scripts": "^2.5.0",
-    "egg-view-ejs": "^2.0.0"
+    "egg-view-ejs": "^2.0.0",
+    "validator": "^10.5.0"
   },
   "devDependencies": {
     "autod": "^3.0.1",
