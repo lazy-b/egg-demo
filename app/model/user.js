@@ -1,32 +1,98 @@
 'use strict';
 
+const utility = require('utility');
+
 module.exports = app => {
   const mongoose = app.mongoose;
   const Schema = mongoose.Schema;
 
-  // 先列一些暂时想到的字段
   const UserSchema = new Schema({
-    // 用户名
-    username: { type: String },
-    // 登录密码
+    name: { type: String },
+    // 登录用户名
+    loginname: { type: String },
+    // 密码
     pass: { type: String },
-    // 用户邮箱
+    // 邮箱
     email: { type: String },
+    url: { type: String },
+    profile_image_url: { type: String },
+    location: { type: String },
+    signature: { type: String },
+    profile: { type: String },
+    // 微博
+    weibo: { type: String },
+    // 头像
+    avatar: { type: String },
+    // githubId
+    githubId: { type: String },
+    // github 用户名
+    githubUsername: { type: String },
+    // github 的登录 token
+    githubAccessToken: { type: String },
+    // 是否禁言
+    is_block: { type: Boolean, default: false },
 
-    // 用户等级
-    level: { type: String },
-    // 用户积分
     score: { type: Number, default: 0 },
-
+    topic_count: { type: Number, default: 0 },
+    reply_count: { type: Number, default: 0 },
+    follower_count: { type: Number, default: 0 },
+    following_count: { type: Number, default: 0 },
+    collect_tag_count: { type: Number, default: 0 },
+    // 用户收藏的话题数
+    collect_topic_count: { type: Number, default: 0 },
     create_at: { type: Date, default: Date.now },
     update_at: { type: Date, default: Date.now },
+    // 是否是达人
+    is_star: { type: Boolean },
+    level: { type: String },
+    active: { type: Boolean, default: false },
+
+    receive_reply_mail: { type: Boolean, default: false },
+    receive_at_mail: { type: Boolean, default: false },
+    from_wp: { type: Boolean },
+
+    // 激活时间
+    retrieve_time: { type: Number },
+    // 激活码
+    retrieve_key: { type: String },
+
+    accessToken: { type: String },
   });
 
   UserSchema.index({ loginname: 1 }, { unique: true });
   UserSchema.index({ email: 1 }, { unique: true });
   UserSchema.index({ score: -1 });
+  UserSchema.index({ githubId: 1 });
+  UserSchema.index({ accessToken: 1 });
 
-  // 保存之前设置更新时间
+  UserSchema.virtual('avatar_url').get(function() {
+    let url =
+      this.avatar ||
+      'https://gravatar.com/avatar/' +
+      utility.md5(this.email.toLowerCase()) +
+      '?size=48';
+
+    // www.gravatar.com 被墙
+    url = url.replace('www.gravatar.com', 'gravatar.com');
+
+    // 让协议自适应 protocol，使用 `//` 开头
+    if (url.indexOf('http:') === 0) {
+      url = url.slice(5);
+    }
+
+    // 如果是 github 的头像，则限制大小
+    if (url.indexOf('githubusercontent') !== -1) {
+      url += '&s=120';
+    }
+
+    return url;
+  });
+
+  UserSchema.virtual('isAdvanced').get(function() {
+    // 积分高于 700 则认为是高级用户
+    return this.score > 700 || this.is_star;
+  });
+
   UserSchema.pre('save', function(next) {
     const now = new Date();
     this.update_at = now;

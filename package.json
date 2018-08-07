@@ -4,11 +4,15 @@
   "description": "an egg demo",
   "private": true,
   "dependencies": {
+    "bcrypt": "^3.0.0",
+    "bcryptjs": "^2.4.3",
     "egg": "^2.2.1",
     "egg-mongoose": "^3.1.0",
     "egg-redis": "^2.0.0",
     "egg-scripts": "^2.5.0",
     "egg-view-ejs": "^2.0.0",
+    "moment": "^2.22.2",
+    "uuid": "^3.3.2",
     "validator": "^10.5.0"
   },
   "devDependencies": {
